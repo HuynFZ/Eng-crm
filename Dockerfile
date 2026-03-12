@@ -1,0 +1,60 @@
+# ---------- Composer Phase ----------
+FROM composer:2.9.2 AS composer-base
+WORKDIR /app
+
+COPY composer.json composer.lock artisan ./
+COPY bootstrap bootstrap
+COPY routes routes
+
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+# ---------- Production Image ----------
+FROM php:8.5-alpine3.23 AS production
+WORKDIR /app
+
+# Install dependencies + GD for image processing
+RUN set -eux; \
+    apk add --no-cache \
+        bash \
+        curl \
+        libzip-dev \
+        oniguruma-dev \
+        mysql-client \
+        icu-dev \
+        icu-libs \
+        # GD dependencies for image processing
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        libwebp-dev \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+    && docker-php-ext-install \
+        pdo_mysql \
+        bcmath \
+        zip \
+        intl \
+        gd
+
+# Configure PHP upload limits
+RUN echo "upload_max_filesize = 10M" >> /usr/local/etc/php/conf.d/uploads.ini && \
+    echo "post_max_size = 12M" >> /usr/local/etc/php/conf.d/uploads.ini && \
+    echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/uploads.ini
+
+# Copy vendor first (cached layer), then source code
+COPY --from=composer-base /app/vendor ./vendor
+COPY backend .
+
+# Set permissions
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \
+    && rm -rf /app/bootstrap/cache/*.php
+
+EXPOSE 8000
+
+# Cache config/routes for production and start server
+CMD php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan serve --host=0.0.0.0 --port=8000
