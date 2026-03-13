@@ -69,20 +69,26 @@
     - Khởi động lại Terminal/Command Prompt
 
 3. **Kiểm tra cài đặt NVM**
+    - Xóa các bản Node.js cũ:
+        + Vào Control Panel -> Uninstall a program.
+        + Tìm Node.js và chọn Uninstall.
+        + Xóa các thư mục còn sót lại (nếu có) tại: C:\Program Files\Nodejs và C:\User\tên user\%AppData%\Local hoặc Roaming\npm hoặc npm-cache.
    ```cmd
    nvm version
    ```
 
-4. **Cài đặt Node.js phiên bản 22**
+4. **Cài đặt Node.js phiên bản 24**
    ```cmd
-   nvm install 22
+   nvm install 24
    ```
 
-5. **Sử dụng Node.js phiên bản 22**
+5.1 **Sử dụng Node.js phiên bản 24** (có ghi bản node nào sau khi cày về, ví dụ: nvm use 24.14.0)
    ```cmd
-   nvm use 22
+   nvm use 24.14.0
    ```
-
+5.2 **Kiểm tra các phiên bản Node đã cài**
+    cmd
+    nvm list (dấu * sẽ hiện ngay bản node đang sử dụng)
 6. **Kiểm tra phiên bản Node.js**
    ```cmd
    node -v
