@@ -142,3 +142,8 @@ npm run dev
 Kiểm tra tại: http://localhost:5173
 
 ---
+
+## Cập nhật thư viện sau khi `git clone` về máy:
+```cmd
+npm install
+```
