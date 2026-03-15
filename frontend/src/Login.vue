@@ -36,8 +36,9 @@ const loading = ref(false)
 const form = reactive({ email: '', password: '' })
 
 const testAccounts = [
-  { email: 'admin@talemy.vn', pass: '12345678', role: 'Admin' },
-  { email: 'teacher@talemy.vn', pass: '12345678', role: 'Teacher' }
+  { email: 'admin@talemy.vn', pass: '12345', role: 'Admin' },
+  { email: 'teacher@talemy.vn', pass: '12345', role: 'Teacher' },
+  { email: 'pt@talemy.vn', pass: '12345', role: 'PT' }
 ]
 
 const handleLogin = () => {

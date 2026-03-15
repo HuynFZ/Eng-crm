@@ -5,6 +5,9 @@
 
       <template v-else>
         <TeacherDashboard v-if="viewMode === 'teacher'" @logout="handleLogout" />
+
+        <PT v-else-if="viewMode === 'pt'" @logout="handleLogout" />
+
         <StudentBooking v-else-if="viewMode === 'student'" />
       </template>
     </div>
@@ -16,29 +19,34 @@ import { ref, onMounted } from 'vue'
 import LoginScreen from './Login.vue'
 import TeacherDashboard from './Teacher.vue'
 import StudentBooking from './StudentBooking.vue'
+import PT from './PT.vue'
 
 const isLoggedIn = ref(false)
-const viewMode = ref('teacher')
+const viewMode = ref('') // Để trống để chờ login gán vào
 
 onMounted(() => {
-  // Check URL: Nếu có ?mode=student thì vào thẳng trang học viên chọn lịch
   const params = new URLSearchParams(window.location.search);
   if (params.get('mode') === 'student') {
     viewMode.value = 'student';
-    isLoggedIn.value = true; // Cho phép xem trang booking không cần login
+    isLoggedIn.value = true;
   }
 })
 
-const handleLoginSuccess = () => {
+// SỬA TẠI ĐÂY: Nhận dữ liệu từ Login gửi sang
+const handleLoginSuccess = (userData) => {
   isLoggedIn.value = true
-  viewMode.value = 'teacher'
+
+  // Kiểm tra nếu userData là object (từ file Login mới của ông) hay là string
+  const role = typeof userData === 'object' ? userData.role : userData
+
+  // Chuyển về chữ thường để so sánh với v-if ở trên
+  viewMode.value = role.toLowerCase()
 }
 
 const handleLogout = () => {
   if (confirm("Huy muốn đăng xuất khỏi hệ thống?")) {
     isLoggedIn.value = false
-    viewMode.value = 'teacher'
-    // Xóa query params nếu đang ở chế độ student
+    viewMode.value = ''
     window.history.replaceState({}, document.title, "/");
   }
 }
